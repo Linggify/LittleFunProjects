@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 
 public class Cell {
 	
-	public static final int MAX_HEALTH = 1000;
+	public static final int MAX_HEALTH = 300;
 	public static final int MAX_STRENGTH = 1000;
 	
 	public static final int COMMAND_NOTHING = 0;
@@ -37,6 +37,7 @@ public class Cell {
 	public void setHealth(int health) {
 		m_health = health;
 		if(m_health > MAX_HEALTH) m_health = MAX_HEALTH;
+		else if(m_health < 0) m_health = 0;
 	}
 	
 	public int getHealth() {
@@ -46,6 +47,7 @@ public class Cell {
 	public void setStrength(int strength) {
 		m_strength = strength;
 		if(m_strength > MAX_STRENGTH) m_strength = MAX_STRENGTH;
+		else if(m_strength < 0) m_strength = 0;
 	}
 	
 	public int getStrength() {
@@ -54,8 +56,8 @@ public class Cell {
 	
 	public void tick(World world, int time, int x, int y) {
 		//decrement health
-		m_health -= 3;
-		m_strength--;
+		setHealth(getHealth() - 2);
+		setStrength(getStrength() - 1);
 		
 		switch(m_dna[time]) {
 		case COMMAND_NOTHING:
@@ -73,11 +75,12 @@ public class Cell {
 			setStrength(getStrength() - 1);
 			break;
 		case COMMAND_REPRODUCE:
+			Random random = new Random();
+			if(random.nextDouble() > 0.5 * ((double) m_strength / (double) MAX_STRENGTH) + 0.5) break;
 			int ad = world.getUnoccupiedAdjected(x, y);
 			if(ad != -1) {
-				Random random = new Random();
 				byte[] dna = new byte[m_dna.length];
-				for(int i = 0; i < dna.length - 1; i++) {
+				for(int i = 0; i < dna.length; i++) {
 					if(random.nextDouble() > 0.9) {
 						dna[i] = (byte) random.nextInt(COMMAND_REPRODUCE + 1);
 					} else {
@@ -85,7 +88,7 @@ public class Cell {
 					}
 				}
 				
-				Cell c = new Cell(dna, m_hue, m_species, m_dna.length * 3 + m_health, m_dna.length + m_strength);
+				Cell c = new Cell(dna, m_hue, m_species, m_dna.length + m_health, m_dna.length / 2 + m_strength);
 				world.setCell(c, ad);
 			}
 			break;

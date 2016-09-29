@@ -29,7 +29,7 @@ public class MainApplication extends Application{
 		BorderPane layout = new BorderPane(m_canvas);
 		
 		m_world = new World();
-		m_world.initialize(800, 600, 6, 0.7, 10);
+		m_world.initialize(800, 600, 10, 0.7, 10);
 		
 		updateImage();
 		

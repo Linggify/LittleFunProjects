@@ -108,7 +108,7 @@ public class World {
 		
 		for(int i = 0; i < m_grid.length; i++) {
 			if(m_grid[i] != null) {
-				if(m_grid[i].getHealth() < 0) {
+				if(m_grid[i].getHealth() <= 0) {
 					m_grid[i] = null;
 				}
 			}
@@ -147,7 +147,7 @@ public class World {
 		id = toID(x + 1, y + 1);
 		if(id != -1 && m_grid[id] == null) ens.add(id);
 		
-		if(!ens.isEmpty()) return ens.get(new Random().nextInt(ens.size()));
+		if(!ens.isEmpty()) return ens.get((int) (new Random().nextDouble() * ens.size()));
 		return -1;
 	}
 	
