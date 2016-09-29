@@ -1,0 +1,8 @@
+- A number of cell colonies is distributed over the map
+- Each cell has a DNA which is a mini program, controlling its toughness, strength and reproduction
+	- reproduction is only possible if there is a non occupied cell next to the "reproducing" cell
+	- reproduction ALWAYS mutates the new cells DNA
+	
+- If two cells of different species are adjected they will battle, leading to reduced toughness and maybe death of one of the two, or both
+- A cell looses its toughness each simulation step
+- A cell can heal of friendly cells and thereby slow down the process of death
