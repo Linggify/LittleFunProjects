@@ -17,7 +17,6 @@ public class World {
 	private Cell[] m_grid;
 	
 	private int m_dnaLength;
-	private int m_dnaTickPos;
 	
 	public World() {
 	}
@@ -71,8 +70,6 @@ public class World {
 			}
 		}
 		
-		m_dnaTickPos = 0;
-		
 		m_worldLock.unlock();
 	}
 	
@@ -80,14 +77,19 @@ public class World {
 		
 		double millis = System.currentTimeMillis();
 		
-		//increment dna pos one per tick, if at the end of dna start over
-		m_dnaTickPos++;
-		if(m_dnaTickPos >= m_dnaLength) m_dnaTickPos -= m_dnaLength;
-		
 		m_worldLock.lock();
 		for(int i = 0; i < m_grid.length; i++) {
-			if(m_grid[i] != null) m_grid[i].tick(this, m_dnaTickPos, i % m_sizeX, i / m_sizeX);
+			if(m_grid[i] != null) m_grid[i].tick(this, i % m_sizeX, i / m_sizeX);
 		}
+
+		for(int i = 0; i < m_grid.length; i++) {
+			if(m_grid[i] != null) {
+				if(m_grid[i].getHealth() <= 0) {
+					m_grid[i] = null;
+				}
+			}
+		}
+		
 		m_worldLock.unlock();
 		
 		System.out.println("World tick lasted " + (System.currentTimeMillis() - millis) + " milliseconds");
@@ -106,15 +108,37 @@ public class World {
 			writer.setColor(x, y, argb);
 		}
 		
-		for(int i = 0; i < m_grid.length; i++) {
-			if(m_grid[i] != null) {
-				if(m_grid[i].getHealth() <= 0) {
-					m_grid[i] = null;
-				}
-			}
-		}
 		
 		m_worldLock.unlock();
+	}
+	
+	public ArrayList<Cell> getNeighbors(int x, int y) {
+		ArrayList<Cell> ens = new ArrayList<>();
+		int id = toID(x - 1, y - 1);
+		if(id != -1 && m_grid[id] != null) ens.add(m_grid[id]);
+		
+		id = toID(x, y - 1);
+		if(id != -1 && m_grid[id] != null) ens.add(m_grid[id]);
+
+		id = toID(x + 1, y - 1);
+		if(id != -1 && m_grid[id] != null) ens.add(m_grid[id]);
+		
+		id = toID(x - 1, y);
+		if(id != -1 && m_grid[id] != null) ens.add(m_grid[id]);
+		
+		id = toID(x + 1, y);
+		if(id != -1 && m_grid[id] != null) ens.add(m_grid[id]);
+		
+		id = toID(x - 1, y + 1);
+		if(id != -1 && m_grid[id] != null) ens.add(m_grid[id]);
+		
+		id = toID(x, y + 1);
+		if(id != -1 && m_grid[id] != null) ens.add(m_grid[id]);
+		
+		id = toID(x + 1, y + 1);
+		if(id != -1 && m_grid[id] != null) ens.add(m_grid[id]);
+		
+		return ens;
 	}
 	
 	public void setCell(Cell c, int id) {

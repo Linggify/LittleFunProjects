@@ -1,5 +1,6 @@
 package de.turnlane.evsim;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import javafx.scene.paint.Color;
@@ -17,6 +18,7 @@ public class Cell {
 	public static final int COMMAND_REPRODUCE = 5;
 	
 	private byte[] m_dna;
+	private int m_dnaClock;
 	
 	private double m_hue;
 	
@@ -32,6 +34,7 @@ public class Cell {
 		setStrength(strength);
 		
 		m_hue = hue;
+		m_dnaClock = 0;
 	}
 	
 	public void setHealth(int health) {
@@ -54,12 +57,16 @@ public class Cell {
 		return m_strength;
 	}
 	
-	public void tick(World world, int time, int x, int y) {
+	public void tick(World world, int x, int y) {
+		
 		//decrement health
 		setHealth(getHealth() - 2);
 		setStrength(getStrength() - 1);
 		
-		switch(m_dna[time]) {
+//		ArrayList<Cell> neighbors = world.getNeighbors(x, y);
+		
+		
+		switch(m_dna[m_dnaClock]) {
 		case COMMAND_NOTHING:
 			break;
 		case COMMAND_INCREMENT_TOUGHNESS:
@@ -94,6 +101,10 @@ public class Cell {
 			break;
 		default:
 		}
+		
+		//increment dnaclock
+		m_dnaClock++;
+		if(m_dnaClock >= m_dna.length) m_dnaClock -= m_dna.length;
 	}
 	
 	public Color getColor() {
